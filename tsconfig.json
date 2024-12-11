@@ -6,12 +6,17 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "types": ["nativewind/types"]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/_layout.jsx"  ]
+    "expo-env.d.ts",
+    "app/_layout.jsx",
+    "app/index.jsx",
+    "hooks/useWarmUpBrowser.jsx",
+    "nativewind-env.d.ts"
+  ]
 }
