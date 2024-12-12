@@ -4,6 +4,7 @@
 // import "../global.css";
 // import { useFonts } from "expo-font";
 // import GlobalProvider from "../context/GlobalProvider";
+// import Categories from "@/components/categories";
 
 // SplashScreen.preventAutoHideAsync();
 // const RootLayout = () => {
@@ -39,6 +40,9 @@
 //       <Stack.Screen name="(tabs)" options={{
 //         headerShown: false,
 //       }}/>
+//       <Stack.Screen name="categories" component={
+//         Categories
+//       }/>
 //       {/* <Stack.Screen name="/search/[query]" options={{
 //         headerShown: false,
 //       }}/> */}
@@ -49,29 +53,85 @@
 // };
 
 // export default RootLayout;
-import {  Text } from "react-native";
+// // import {  Text } from "react-native";
+// // import React, { useEffect } from "react";
+// // import { Slot, SplashScreen, Stack } from "expo-router";
+// // import "../global.css";
+// // import { useFonts } from "expo-font";
+// // import GlobalProvider from "../context/GlobalProvider";
+// // import { clerkFrontendApi } from "@/lib/clerkconfig";
+// //   import { ClerkProvider } from "@clerk/clerk-expo";
+
+// // SplashScreen.preventAutoHideAsync();
+// // const RootLayout = () => {
+// //   const [fontsLoaded, error] = useFonts({
+// //     MerriweatherBlack: require("../assets/fonts/MerriweatherBlack.ttf"),
+// //     merriweatherbold: require("../assets/fonts/MerriweatherBold.ttf"),
+// //     merriweatherbold: require("../assets/fonts/Merriweather-BoldItalic.ttf"),
+
+// //   });
+
+// //   useEffect(() => {
+// //     if (fontsLoaded) SplashScreen.hideAsync();
+// //     {
+// //       console.log("Fonts loaded successfully");
+// //     }
+// //     if (error) {
+// //       console.log("Fonts failed to load");
+// //     }
+// //     if (!fontsLoaded && !error) {
+// //       console.log("Fonts are still loading");
+// //     }
+// //   }, [fontsLoaded, error]);
+
+// //   return (
+    
+// //     <GlobalProvider>
+// //           <ClerkProvider frontendApi={clerkFrontendApi}>
+
+// //     <Stack>
+// //       <Stack.Screen name="index" options={{
+// //         headerShown: false,
+// //       }}/>
+// //       <Stack.Screen name="(auth)" options={{
+// //         headerShown: false,
+// //       }}/>
+// //       <Stack.Screen name="(tabs)" options={{
+// //         headerShown: false,
+// //       }}/>
+// //       {/* <Stack.Screen name="/search/[query]" options={{
+// //         headerShown: false,
+// //       }}/> */}
+// //       {/* <Slot /> */}
+// //     </Stack>
+// //     </ClerkProvider >
+
+// //     </GlobalProvider>
+    
+// //   );
+// // };
+
+// // export default RootLayout;
+
+import { Text } from "react-native";
 import React, { useEffect } from "react";
 import { Slot, SplashScreen, Stack } from "expo-router";
 import "../global.css";
 import { useFonts } from "expo-font";
 import GlobalProvider from "../context/GlobalProvider";
-import { clerkFrontendApi } from "@/lib/clerkconfig";
-  import { ClerkProvider } from "@clerk/clerk-expo";
+import Categories from "./categories/categories";
 
 SplashScreen.preventAutoHideAsync();
+
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
     MerriweatherBlack: require("../assets/fonts/MerriweatherBlack.ttf"),
     merriweatherbold: require("../assets/fonts/MerriweatherBold.ttf"),
     merriweatherbold: require("../assets/fonts/Merriweather-BoldItalic.ttf"),
-
   });
 
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync();
-    {
-      console.log("Fonts loaded successfully");
-    }
     if (error) {
       console.log("Fonts failed to load");
     }
@@ -81,29 +141,35 @@ const RootLayout = () => {
   }, [fontsLoaded, error]);
 
   return (
-    
     <GlobalProvider>
-          <ClerkProvider frontendApi={clerkFrontendApi}>
-
-    <Stack>
-      <Stack.Screen name="index" options={{
-        headerShown: false,
-      }}/>
-      <Stack.Screen name="(auth)" options={{
-        headerShown: false,
-      }}/>
-      <Stack.Screen name="(tabs)" options={{
-        headerShown: false,
-      }}/>
-      {/* <Stack.Screen name="/search/[query]" options={{
-        headerShown: false,
-      }}/> */}
-      {/* <Slot /> */}
-    </Stack>
-    </ClerkProvider >
-
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="(auth)"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="categories/categories"
+        />
+        <Stack.Screen
+          name="categories/allcategories"
+        />
+        <Slot />
+      </Stack>
     </GlobalProvider>
-    
   );
 };
 
