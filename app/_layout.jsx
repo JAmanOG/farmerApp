@@ -163,9 +163,19 @@ const RootLayout = () => {
         />
         <Stack.Screen
           name="categories/categories"
+          options={
+            {
+              title: "Categories",
+            }
+          }
         />
         <Stack.Screen
           name="categories/allcategories"
+          options={
+            {
+              title: "All Categories",
+            }
+          }
         />
         <Slot />
       </Stack>
