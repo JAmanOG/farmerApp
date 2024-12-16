@@ -221,18 +221,33 @@ import {
   Alert,
   FlatList,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import Search from "../search/[query]";
-import { useNavigation } from "@react-navigation/native";
+import MapView from "react-native-maps";
 import { useRouter } from "expo-router";
-export default function Home() {
+
+export default function home() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState(null);
+
   const router = useRouter();
+  const zoomIn = {
+    0: {
+      scale: 0.9,
+    },
+    1: {
+      scale: 1,
+    },
+  }
+  const zoomOut = {
+    0: {
+      scale: 1,
+    },
+    1: {
+      scale: 0.9,
+    },
+  }
 
   useEffect(() => {
     (async () => {
@@ -301,30 +316,35 @@ export default function Home() {
   ];
   const flashSaleItems = [
     {
+      id: 1,
       title: "Apple iPhone 15 Pro",
       price: "£699.00",
       originalPrice: "£739.00",
       image: "https://link-to-image.com/iphone.png",
     },
     {
+      id: 2,
       title: "Samsung Galaxy Buds Pro",
       price: "£69.00",
       originalPrice: "£85.00",
       image: "https://link-to-image.com/galaxy-buds.png",
     },
     {
+      id: 3,
       title: "Samsung Galaxy Buds Pro",
       price: "£69.00",
       originalPrice: "£85.00",
       image: "https://link-to-image.com/galaxy-buds.png",
     },
     {
+      id: 4,
       title: "Samsung Galaxy Buds Pro",
       price: "£69.00",
       originalPrice: "£85.00",
       image: "https://link-to-image.com/galaxy-buds.png",
     },
     {
+      id: 5,
       title: "Samsung Galaxy Buds Pro",
       price: "£69.00",
       originalPrice: "£85.00",
@@ -434,6 +454,9 @@ export default function Home() {
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
+              <TouchableOpacity
+              onPress={() => router.push({pathname:'categories/productDetailsPage', params: { productId: item.id }})}
+            >
               <View className="mr-4 border border-black p-3 rounded-lg h-45 w-45">
                 <Image
                   source={{ uri: item.image }}
@@ -447,6 +470,7 @@ export default function Home() {
                   </Text>
                 </View>
               </View>
+              </TouchableOpacity>
             )}
           />
         </View>
@@ -458,6 +482,9 @@ export default function Home() {
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
+              <TouchableOpacity
+              onPress={() => router.push({pathname:'categories/productDetailsPage', params: { productId: item.id }})}
+            >
               <View className="mr-4 border border-black p-3 rounded-lg h-45 w-45">
                 <Image
                   source={{ uri: item.image }}
@@ -471,6 +498,7 @@ export default function Home() {
                   </Text>
                 </View>
               </View>
+              </TouchableOpacity>
             )}
           />
         </View>
@@ -480,8 +508,11 @@ export default function Home() {
             data={flashSaleItems}
             horizontal
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
+              <TouchableOpacity
+              onPress={() => router.push({pathname:'categories/productDetailsPage', params: { productId: item.id }})}
+            >
               <View className="mr-4 border border-black p-3 rounded-lg h-45 w-45">
                 <Image
                   source={{ uri: item.image }}
@@ -495,6 +526,7 @@ export default function Home() {
                   </Text>
                 </View>
               </View>
+              </TouchableOpacity>
             )}
           />
         </View>

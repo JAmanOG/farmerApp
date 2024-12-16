@@ -119,7 +119,6 @@ import { Slot, SplashScreen, Stack } from "expo-router";
 import "../global.css";
 import { useFonts } from "expo-font";
 import GlobalProvider from "../context/GlobalProvider";
-import Categories from "./categories/categories";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -176,6 +175,14 @@ const RootLayout = () => {
               title: "All Categories",
             }
           }
+        />
+        <Stack.Screen
+        name="categories/productDetailsPage"
+        options={
+          {
+            title: "Product Details",
+          }
+        }
         />
         <Slot />
       </Stack>
