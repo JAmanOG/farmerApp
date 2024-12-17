@@ -1,172 +1,208 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, Switch, TouchableOpacity, Button } from 'react-native';
-import { Ionicons,AntDesign } from '@expo/vector-icons'; // For icons
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Switch,
+  TouchableOpacity,
+} from "react-native";
+import { Ionicons, AntDesign } from "@expo/vector-icons"; // For icons
+import ModeContext from "../../context/Modecontext";
+import CustomModalForm from '../../components/customModal';
 
 export default function Setting() {
   const [soundEnabled, setSoundEnabled] = useState(false);
-  const [isFarmer, setIsFarmer] = useState(true);
-  const [isDisabled, setIsDisabled] = useState(false);
-
-  const toggleRole = () => {
-    setIsDisabled(true); // Disable the button
-    setTimeout(() => {
-      setIsFarmer(!isFarmer);
-      setIsDisabled(false); // Re-enable the button after 4 seconds
-    }, 1000);
+  const { mode, toggleRole, isDisabled } = React.useContext(ModeContext);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const handleSave = (value) => {
+    console.log("Saved data:", value);
+    // You can update the relevant data for the item here
   };
+  //Modal
+  // const [isVisible, setIsVisible] = useState(false); // Modal visibility state
+  // const [name, setName] = useState('John Doe'); // Default name
+  // const [newName, setNewName] = useState(''); // State for user input
+
+  // const handleSave = () => {
+  //   if (newName.trim()) {
+  //     setName(newName); // Update name
+  //     setIsVisible(false); // Close modal
+  //     setNewName(''); // Clear input
+  //   }
+  // };
+  
   return (
     <View style={styles.container}>
-      {isFarmer ? (
-        
-<>
-   {/* Header */}
-   <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-        <TouchableOpacity
-      onPress={toggleRole}
-      disabled={isDisabled} 
-    >
-        <Text>Switch to Customer{" "}
-        <AntDesign name="swap" size={24} color="black" /></Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Profile Picture and Info */}
-      <View style={styles.profileSection}>
-        <Image
-          source={{ uri: 'https://via.placeholder.com/100' }}
-          style={styles.profileImage}
-        />
-        <Text style={styles.name}>Farmer Name</Text>
-        <Text style={styles.username}>Farmer Username</Text>
-      </View>
-
-      {/* Steps Today */}
-      {/* <View style={styles.stepsContainer}>
-        <Text style={styles.stepsNumber}>6 859</Text>
-        <Text style={styles.stepsText}>Steps today</Text>
-      </View> */}
-
-      {/* Menu Items */}
-      <View style={styles.menuContainer}>
-        {menuItems.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.menuItem}
-          onPress={() => console.log(item.label)}
-          >
-            <View style={styles.menuTextContainer}>
-              <Ionicons name={item.icon} size={20} color="black" style={styles.menuIcon} />
-              <Text style={styles.menuText}>{item.label}</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="black" />
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Sound Toggle */}
-      <View style={styles.soundContainer}>
-        <Text style={styles.soundText}>Sound</Text>
-        <Switch
-          value={soundEnabled}
-          onValueChange={setSoundEnabled}
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={soundEnabled ? '#f5dd4b' : '#f4f3f4'}
-        />
-      </View>
-</>
-
-        
-      ): (
+      {mode == 'farmer' ? (
         <>
-           {/* Header */}
-      <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-        <TouchableOpacity
-      onPress={toggleRole}
-      disabled={isDisabled}
-    >
-        <Text>Switch to Farmer{" "}
-        <AntDesign name="swap" size={24} color="black" /></Text>
-        </TouchableOpacity>
-      </View>
+          {/* Header */}
+          <View style={styles.header}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+            <TouchableOpacity onPress={toggleRole} disabled={isDisabled}>
+              <Text>
+              {isDisabled ? 'Please wait...' : mode === 'customer' ? 'Switch to Farmer' : 'Switch to Customer'}{" "}<AntDesign name="swap" size={24} color="black" />
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-      {/* Profile Picture and Info */}
-      <View style={styles.profileSection}>
-        <Image
-          source={{ uri: 'https://via.placeholder.com/100' }}
-          style={styles.profileImage}
-        />
-        <Text style={styles.name}>Customer Name</Text>
-        <Text style={styles.username}>Customer Username</Text>
-      </View>
+          {/* Profile Picture and Info */}
+          <View style={styles.profileSection}>
+            <Image
+              source={{ uri: "https://via.placeholder.com/100" }}
+              style={styles.profileImage}
+            />
+            <Text style={styles.name}>Farmer Name</Text>
+            <Text style={styles.username}>Farmer Username</Text>
+          </View>
 
-      {/* Steps Today */}
-      {/* <View style={styles.stepsContainer}>
+          {/* Steps Today */}
+          {/* <View style={styles.stepsContainer}>
         <Text style={styles.stepsNumber}>6 859</Text>
         <Text style={styles.stepsText}>Steps today</Text>
       </View> */}
 
-      {/* Menu Items */}
-      <View style={styles.menuContainer}>
-        {CustomerItem.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.menuItem}
-          onPress={() => console.log(item.label)}
-          >
-            <View style={styles.menuTextContainer}>
-              <Ionicons name={item.icon} size={20} color="black" style={styles.menuIcon} />
-              <Text style={styles.menuText}>{item.label}</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="black" />
-          </TouchableOpacity>
-        ))}
-      </View>
+          {/* Menu Items */}
+          <View style={styles.menuContainer}>
+            {menuItems.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.menuItem}
+                onPress={() => console.log(item.label)}
+              >
+                <View style={styles.menuTextContainer}>
+                  <Ionicons
+                    name={item.icon}
+                    size={20}
+                    color="black"
+                    style={styles.menuIcon}
+                  />
+                  <Text style={styles.menuText}>{item.label}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="black" />
+              </TouchableOpacity>
+            ))}
+          </View>
 
-      {/* Sound Toggle */}
-      <View style={styles.soundContainer}>
-        <Text style={styles.soundText}>Sound</Text>
-        <Switch
-          value={soundEnabled}
-          onValueChange={setSoundEnabled}
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={soundEnabled ? '#f5dd4b' : '#f4f3f4'}
-        />
-      </View>
+          {/* Sound Toggle */}
+          <View style={styles.soundContainer}>
+            <Text style={styles.soundText}>Sound</Text>
+            <Switch
+              value={soundEnabled}
+              onValueChange={setSoundEnabled}
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={soundEnabled ? "#f5dd4b" : "#f4f3f4"}
+            />
+          </View>
         </>
-      )
-      }
-   
+      ) : (
+        <>
+          {/* Header */}
+          <View style={styles.header}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+            <TouchableOpacity onPress={toggleRole} disabled={isDisabled}>
+              <Text>
+              {isDisabled ? 'Please wait...' : mode === 'customer' ? 'Switch to Farmer' : 'Switch to Customer'}
+                <AntDesign name="swap" size={24} color="black" />
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Profile Picture and Info */}
+          <View style={styles.profileSection}>
+            <Image
+              source={{ uri: "https://via.placeholder.com/100" }}
+              style={styles.profileImage}
+            />
+            <Text style={styles.name}>Customer Name</Text>
+            <Text style={styles.username}>Customer Username</Text>
+          </View>
+
+          {/* Steps Today */}
+          {/* <View style={styles.stepsContainer}>
+        <Text style={styles.stepsNumber}>6 859</Text>
+        <Text style={styles.stepsText}>Steps today</Text>
+      </View> */}
+
+          {/* Menu Items */}
+          <View style={styles.menuContainer}>
+            {CustomerItem.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.menuItem}
+                onPress={() => {
+                  setSelectedItem(item); // Set the selected item
+                  setModalVisible(true); // Open modal
+                }}              >
+                <View style={styles.menuTextContainer}>
+                  <Ionicons
+                    name={item.icon}
+                    size={20}
+                    color="black"
+                    style={styles.menuIcon}
+                  />
+                  <Text style={styles.menuText}>{item.label}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="black" />
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Sound Toggle */}
+          <View style={styles.soundContainer}>
+            <Text style={styles.soundText}>Sound</Text>
+            <Switch
+              value={soundEnabled}
+              onValueChange={setSoundEnabled}
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={soundEnabled ? "#f5dd4b" : "#f4f3f4"}
+            />
+          </View>
+          {selectedItem && (
+        <CustomModalForm
+          isVisible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onSave={handleSave}
+          title={selectedItem.label}
+          placeholder={`Enter ${selectedItem.label}`}
+          initialValue={selectedItem} // Pass the initial data to the modal
+        />
+      )}        </>
+      )}
     </View>
   );
 }
 
 const menuItems = [
-  { label: 'Profile Picture & Name', icon: 'people-outline' },
-  { label: 'Personal Info', icon: 'person-outline' },
-  { label: 'Business Info/inquiries ', icon: 'stats-chart-outline' },
-  { label: 'Product Management', icon: 'cart-outline' },
-  { label: 'Logout button', icon: 'exit-outline' },
+  { label: "Profile Picture & Name", icon: "people-outline" },
+  { label: "Personal Info", icon: "person-outline" },
+  { label: "Business Info/inquiries ", icon: "stats-chart-outline" },
+  { label: "Product Management", icon: "cart-outline" },
+  { label: "Logout button", icon: "exit-outline" },
 ];
 
 const CustomerItem = [
-  { label: 'Profile Picture & Name', icon: 'people-outline' },
-  { label: 'Contact Info', icon: 'call-outline' },
-  { label: 'Wishlist ', icon: 'heart-outline' },
-  { label: 'inquiries made', icon: 'person-outline' },
-  { label: 'Logout button', icon: 'exit-outline' },
+  { label: "Profile Picture & Name", icon: "people-outline" },
+  { label: "Contact Info", icon: "call-outline" },
+  { label: "Wishlist", icon: "heart-outline" },
+  { label: "inquiries made", icon: "person-outline" },
+  { label: "Logout button", icon: "exit-outline" },
 ];
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
     paddingHorizontal: 20,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 40,
   },
   profileSection: {
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 20,
   },
   profileImage: {
@@ -177,45 +213,45 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   username: {
     fontSize: 14,
-    color: 'gray',
+    color: "gray",
   },
   stepsContainer: {
-    backgroundColor: '#dfefff',
+    backgroundColor: "#dfefff",
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   stepsNumber: {
     fontSize: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   stepsText: {
     fontSize: 14,
-    color: 'gray',
+    color: "gray",
   },
   menuContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     paddingVertical: 10,
     marginBottom: 20,
   },
   menuItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
+    borderBottomColor: "#f2f2f2",
   },
   menuTextContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   menuIcon: {
     marginRight: 10,
@@ -224,10 +260,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   soundContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 15,
   },
@@ -235,13 +271,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: 'white',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "white",
     paddingVertical: 10,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,

@@ -209,7 +209,7 @@
 //       </SafeAreaView>
 //     );
 // }
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useContext} from "react";
 import {
   View,
   Text,
@@ -226,10 +226,12 @@ import * as Location from "expo-location";
 import Search from "../search/[query]";
 import MapView from "react-native-maps";
 import { useRouter } from "expo-router";
+import {useGlobalContext} from "../../context/GlobalProvider";
 
 export default function home() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const { user, isloggedIn, loading } = useGlobalContext();
 
   const router = useRouter();
   const zoomIn = {
@@ -385,15 +387,15 @@ export default function home() {
         </View>
 
         {/* Banner */}
-        <View className="px-4 py-4">
+        <View className="px-2 py-4">
           <View
             className={
               "bg-indigo-100 rounded-lg px-4 py-3 flex-row items-center"
             }
           >
             <Text className={"text-gray-800 font-semibold"}>
-              Delivery is <Text className={"font-bold text-purple"}>50%</Text>{" "}
-              cheaper
+              Welcome back <Text className={"font-bold text-purple"}>{user.username}</Text>{" "}
+              🙏
             </Text>
             <Image
               source={{ uri: "https://link-to-image.com/banner.png" }}
@@ -403,7 +405,7 @@ export default function home() {
         </View>
 
         {/* Categories */}
-        <View className={"px-4"}>
+        <View className={"px-2"}>
           <View className={"flex-row justify-between items-center"}>
             <Text className={"font-bold text-lg"}>Categories</Text>
             <TouchableOpacity
@@ -446,7 +448,7 @@ export default function home() {
         </View>
 
         {/* Flash Sale Items */}
-        <View className="px-4 mt-6">
+        <View className="px-2 mt-6">
           <Text className="font-bold text-lg">Product List</Text>
           <FlatList
             data={flashSaleItems}
@@ -474,7 +476,7 @@ export default function home() {
             )}
           />
         </View>
-        <View className="px-4 mt-6">
+        <View className="px-2 mt-6">
           <Text className="font-bold text-lg">Recently added</Text>
           <FlatList
             data={flashSaleItems}
@@ -502,7 +504,7 @@ export default function home() {
             )}
           />
         </View>
-        <View className="px-4 mt-6">
+        <View className="px-2 mt-6">
           <Text className="font-bold text-lg">Nearby location</Text>
           <FlatList
             data={flashSaleItems}

@@ -115,28 +115,6 @@ const categoriess = [
       ]
     },
     {
-      name: "Livestock and Animal Products",
-      subcategories: [
-        {
-          name: "Livestock",
-          products: [
-            { name: "Cows", price: 50000 },
-            { name: "Buffaloes", price: 60000 },
-            { name: "Goats", price: 15000 },
-            { name: "Chickens", price: 300 }
-          ]
-        },
-        {
-          name: products,
-          products: [
-            { name: "Eggs", price: 6 },
-            { name: "Meat", price: 300 },
-            { name: "Wool", price: 1000 }
-          ]
-        }
-      ]
-    },
-    {
       name: "Spices",
       products: [
         { name: "Turmeric", price: 200 },
@@ -192,22 +170,6 @@ const categoriess = [
         { name: "Organic Fruits", price: 100 },
         { name: "Organic Manure (Compost)", price: 300 },
         { name: "Vermicompost", price: 400 }
-      ]
-    },
-    {
-      name: "Handmade and Local Products",
-      products: [
-        { name: "Handloom Sarees", price: 1500 },
-        { name: "Bamboo Baskets", price: 300 },
-        { name: "Jute Bags", price: 250 }
-      ]
-    },
-    {
-      name: "Equipment Rentals",
-      products: [
-        { name: "Tractors", price: 3000 },
-        { name: "Sprayers", price: 500 },
-        { name: "Farming Tools", price: 200 }
       ]
     },
     {

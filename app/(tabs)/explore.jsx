@@ -11,6 +11,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-picker/picker';
 import {Picker} from '@react-native-picker/picker';
+import ModeContext from "../../context/Modecontext";
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function explore() {
   const [productName, setProductName] = useState('');
@@ -22,9 +24,26 @@ export default function explore() {
   const [availability, setAvailability] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-
+  const { mode, toggleRole, isDisabled } = React.useContext(ModeContext);
+  const subjects = [
+    { name: 'Crops', colors: ['#FF5F6D', '#FFC371'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Vegetables', colors: ['#11998e', '#38ef7d'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Fruits', colors: ['#f12711', '#f5af19'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Dairy Products', colors: ['#36D1DC', '#5B86E5'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Spices', colors: ['#FF416C', '#FF4B2B'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Flowers', colors: ['#833ab4', '#fd1d1d', '#fcb045'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Herbs and Medicinal Plants', colors: ['#56ab2f', '#a8e063'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Seeds and Saplings', colors: ['#3a7bd5', '#3a6073'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Processed Foods', colors: ['#12c2e9', '#c471ed', '#f64f59'], image: { uri: "https://via.placeholder.com/100" } },
+    { name: 'Fertilizers and Pesticides', colors: ['#0F2027', '#203A43', '#2C5364'], image: { uri: "https://via.placeholder.com/100" } },
+  ];
+  
   return (
-    <ScrollView style={styles.container}>
+    <>
+          <ScrollView style={styles.containers}>
+
+    {mode == 'farmer'?(
+    <View>
       <Text style={styles.header}>Add Product</Text>
       <Text style={styles.subHeader}>Add your product for your customers</Text>
 
@@ -144,11 +163,84 @@ export default function explore() {
       <TouchableOpacity style={styles.submitButton}>
         <Text style={styles.submitButtonText}>Add Product</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>):(
+            <View className='mb-10'>
+
+          {/* Header */}
+          <Text style={styles.title}>Explore 🚀</Text>
+          <Text style={styles.subtitle}>
+            Never trust anyone who has not brought a book with them.
+          </Text>
+    
+          {/* Subject Cards */}
+          {subjects.map((subject, index) => (
+            <LinearGradient
+              key={index}
+              colors={subject.colors}
+              style={styles.card}
+            >
+              <View style={styles.content}>
+                <Text style={styles.subjectTitle}>{subject.name}</Text>
+                <Text style={styles.subjectTagline}>
+                  Study nature, love nature, stay close to nature
+                </Text>
+              </View>
+              <Image source={subject.image} style={styles.image} />
+            </LinearGradient>
+          ))}
+            </View>
+    )}
+        </ScrollView>
+
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  containers: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 15,
+    paddingTop: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000000',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#000000',
+    marginBottom: 20,
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 15,
+    marginBottom: 15,
+    padding: 20,
+    height: 130,
+  },
+  content: {
+    flex: 1,
+  },
+  subjectTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  subjectTagline: {
+    fontSize: 12,
+    color: '#FFF',
+    marginTop: 5,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+  },
   container: {
     flex: 1,
     backgroundColor: '#f9f9f9',
