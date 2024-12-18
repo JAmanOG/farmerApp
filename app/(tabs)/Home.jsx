@@ -227,29 +227,17 @@ import Search from "../search/[query]";
 import MapView from "react-native-maps";
 import { useRouter } from "expo-router";
 import {useGlobalContext} from "../../context/GlobalProvider";
+import LocationContext from "../../context/LocationContext";
+import { categories } from "../../constants";
 
 export default function home() {
-  const [location, setLocation] = useState(null);
+  const [locations, setLocations] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const { user, isloggedIn, loading } = useGlobalContext();
+  const { updateLocation } = useContext(LocationContext); 
+  console.log("User: ", user);
 
   const router = useRouter();
-  const zoomIn = {
-    0: {
-      scale: 0.9,
-    },
-    1: {
-      scale: 1,
-    },
-  }
-  const zoomOut = {
-    0: {
-      scale: 1,
-    },
-    1: {
-      scale: 0.9,
-    },
-  }
 
   useEffect(() => {
     (async () => {
@@ -265,8 +253,13 @@ export default function home() {
           latitude: currentLocation.coords.latitude,
           longitude: currentLocation.coords.longitude,
         });
-
-        setLocation(address[0] || {});
+        const locationData = address[0] || {};
+        setLocations(locationData);
+        if (locationData) {
+          updateLocation(locationData);
+        } else {
+          setErrorMsg("Unable to fetch address");
+        }     
       } catch (error) {
         setErrorMsg("Error fetching location");
         console.error(error);
@@ -274,48 +267,48 @@ export default function home() {
     })();
   }, []);
 
-  const categories = [
-    {
-      category: "Phones",
-      products: [
-        { name: "Phones Product 1", price: 199.99 },
-        { name: "Phones Product 2", price: 299.99 },
-        { name: "Phones Product 3", price: 399.99 },
-      ],
-    },
-    {
-      category: "Consoles",
-      products: [
-        { name: "Consoles Product 1", price: 199.99 },
-        { name: "Consoles Product 2", price: 299.99 },
-        { name: "Consoles Product 3", price: 399.99 },
-      ],
-    },
-    {
-      category: "Laptops",
-      products: [
-        { name: "Laptops Product 1", price: 199.99 },
-        { name: "Laptops Product 2", price: 299.99 },
-        { name: "Laptops Product 3", price: 399.99 },
-      ],
-    },
-    {
-      category: "Cameras",
-      products: [
-        { name: "Cameras Product 1", price: 199.99 },
-        { name: "Cameras Product 2", price: 299.99 },
-        { name: "Cameras Product 3", price: 399.99 },
-      ],
-    },
-    {
-      category: "Audio",
-      products: [
-        { name: "Audio Product 1", price: 199.99 },
-        { name: "Audio Product 2", price: 299.99 },
-        { name: "Audio Product 3", price: 399.99 },
-      ],
-    },
-  ];
+  // const categories = [
+  //   {
+  //     category: "Phones",
+  //     products: [
+  //       { name: "Phones Product 1", price: 199.99 },
+  //       { name: "Phones Product 2", price: 299.99 },
+  //       { name: "Phones Product 3", price: 399.99 },
+  //     ],
+  //   },
+  //   {
+  //     category: "Consoles",
+  //     products: [
+  //       { name: "Consoles Product 1", price: 199.99 },
+  //       { name: "Consoles Product 2", price: 299.99 },
+  //       { name: "Consoles Product 3", price: 399.99 },
+  //     ],
+  //   },
+  //   {
+  //     category: "Laptops",
+  //     products: [
+  //       { name: "Laptops Product 1", price: 199.99 },
+  //       { name: "Laptops Product 2", price: 299.99 },
+  //       { name: "Laptops Product 3", price: 399.99 },
+  //     ],
+  //   },
+  //   {
+  //     category: "Cameras",
+  //     products: [
+  //       { name: "Cameras Product 1", price: 199.99 },
+  //       { name: "Cameras Product 2", price: 299.99 },
+  //       { name: "Cameras Product 3", price: 399.99 },
+  //     ],
+  //   },
+  //   {
+  //     category: "Audio",
+  //     products: [
+  //       { name: "Audio Product 1", price: 199.99 },
+  //       { name: "Audio Product 2", price: 299.99 },
+  //       { name: "Audio Product 3", price: 399.99 },
+  //     ],
+  //   },
+  // ];
   const flashSaleItems = [
     {
       id: 1,
@@ -356,9 +349,9 @@ export default function home() {
 
   const displayLocation = () => {
     if (errorMsg) return errorMsg;
-    console.log("Locations: ", location);
-    if (location) {
-      const { name, street, district, city } = location;
+    console.log("Locations: ", locations);
+    if (locations) {
+      const { name, street, district, city } = locations;
       return `${name || ""} ${street ? street : district}, ${city || ""}`;
     }
     return "Fetching location...";
@@ -424,14 +417,14 @@ export default function home() {
             showsHorizontalScrollIndicator={false}
             className={"flex-row mt-2"}
           >
-            {categories.map((category, index) => (
+            {categories.map((name, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  console.log(category); // Check what `category` contains
+                  console.log(name); // Check what `name` contains
                   router.push({
                     pathname: "categories/categories", // Ensure the pathname is correct
-                    params: { category: JSON.stringify(category) } // Pass the category directly as an object
+                    params: { category: JSON.stringify(name) } // Pass the name directly as an object
                                 });
                 }}
               >
@@ -440,7 +433,7 @@ export default function home() {
                   className={"items-center mx-2 bg-gray-100 rounded-full p-3"}
                 >
                   <FontAwesome name="circle" size={24} color="gray" />
-                  <Text className={"text-xs mt-1"}>{category.category}</Text>
+                  <Text className={"text-xs mt-1"}>{name.name}</Text>
                 </View>
               </TouchableOpacity>
             ))}

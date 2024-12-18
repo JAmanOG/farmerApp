@@ -120,6 +120,7 @@ import "../global.css";
 import { useFonts } from "expo-font";
 import GlobalProvider from "../context/GlobalProvider";
 import ModeProvider from "../context/ModeProvider";
+import LocationProvider from "../context/LocationProvider";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -142,6 +143,7 @@ const RootLayout = () => {
 
   return (
     <GlobalProvider>
+      <LocationProvider>
       <ModeProvider>
       <Stack>
         <Stack.Screen
@@ -189,6 +191,7 @@ const RootLayout = () => {
         <Slot />
       </Stack>
       </ModeProvider>
+      </LocationProvider>
     </GlobalProvider>
   );
 };

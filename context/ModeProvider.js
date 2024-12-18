@@ -4,6 +4,7 @@ import ModeContext from './Modecontext';
 const ModeProvider = ({ children }) => {
   const [mode, setMode] = useState('customer'); // Manages the role
   const [isDisabled, setIsDisabled] = useState(false); // Manages button disable state
+  console.log('Reached here ModeProvider.js');
 
   const toggleRole = () => {
     setIsDisabled(true); // Disable the button

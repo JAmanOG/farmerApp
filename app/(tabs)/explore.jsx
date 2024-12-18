@@ -7,24 +7,63 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Button,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-picker/picker';
 import {Picker} from '@react-native-picker/picker';
 import ModeContext from "../../context/Modecontext";
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
+import { categories } from '../../constants';
+import LocationContext from '../../context/LocationContext';
 
 export default function explore() {
+  const {location} = React.useContext(LocationContext);
+  const loc = location;
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [region, setRegion] = useState('');
+  const [region, setRegion] = useState(loc.formattedAddress || '');
   const [availability, setAvailability] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { mode, toggleRole, isDisabled } = React.useContext(ModeContext);
+
+  // States for managing selected options and new product addition
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [newProductName, setNewProductName] = useState("");
+
+  // const handleAddProduct = () => {
+  //   if (selectedCategory && selectedSubcategory && newProductName) {
+  //     // Find the selected category
+  //     const category = categories.find(cat => cat.name === selectedCategory);
+
+  //     // Ensure subcategories exist before accessing
+  //     if (category && category.subcategories) {
+  //       const subcategory = category.subcategories.find(sub => sub.name === selectedSubcategory);
+
+  //       // Add the new product to the selected subcategory
+  //       if (subcategory) {
+  //         subcategory.products.push({ name: newProductName });
+  //         setNewProductName("");
+  //         alert("Product added successfully!");
+  //       } else {
+  //         alert("Subcategory not found!");
+  //       }
+  //     } else {
+  //       alert("Category not found or has no subcategories!");
+  //     }
+  //   } else {
+  //     alert("Please select a category, subcategory, and enter a product name.");
+  //   }
+  // };
+
+
   const subjects = [
     { name: 'Crops', colors: ['#FF5F6D', '#FFC371'], image: { uri: "https://via.placeholder.com/100" } },
     { name: 'Vegetables', colors: ['#11998e', '#38ef7d'], image: { uri: "https://via.placeholder.com/100" } },
@@ -38,6 +77,18 @@ export default function explore() {
     { name: 'Fertilizers and Pesticides', colors: ['#0F2027', '#203A43', '#2C5364'], image: { uri: "https://via.placeholder.com/100" } },
   ];
   
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    console.log(result);
+  };
+
+
   return (
     <>
           <ScrollView style={styles.containers}>
@@ -71,18 +122,104 @@ export default function explore() {
       </View>
 
       {/* Product Category */}
-      <View style={styles.section}>
+      {/* <View style={styles.section}>
         <Text style={styles.label}>Category</Text>
         <Picker
           selectedValue={category}
           style={styles.picker}
           onValueChange={(itemValue) => setCategory(itemValue)}>
           <Picker.Item label="Select a category" value="" />
-          <Picker.Item label="Electronics" value="electronics" />
-          <Picker.Item label="Clothing" value="clothing" />
-          <Picker.Item label="Accessories" value="accessories" />
+          <Picker.Item label="Crops" value="crops" />
+          <Picker.Item label="Fruits" value="fruits" />
+          <Picker.Item label="Dairy Products" value="dairy_products" />
+          <Picker.Item label="Spices" value="spices" />
+          <Picker.Item label="Flowers" value="flowers" />
+          <Picker.Item label="Herbs and Medicinal Plants" value="Herbs_medicinal_plants" />
+          <Picker.Item label="Seeds and Saplings" value="seeds_and_saplings" />
+          <Picker.Item label="Processed Foods" value="Processed_and_foods" />
+          <Picker.Item label="Fertilizers and Pesticides" value="fertilizers_and_perticides" />
         </Picker>
       </View>
+ */}
+
+<Text>Category:</Text>
+      <Picker
+        selectedValue={selectedCategory}
+        onValueChange={(value) => {
+          setSelectedCategory(value);
+          setSelectedSubcategory(null); // Reset subcategory when category changes
+          setSelectedProduct(null); // Reset product when category changes
+        }}>
+        <Picker.Item label="Select a category" value={null} />
+        {categories.map((category) => (
+          <Picker.Item key={category.name} label={category.name} value={category.name} />
+        ))}
+      </Picker>
+
+      {/* Dropdown for selecting a subcategory */}
+      {selectedCategory && categories.find(cat => cat.name === selectedCategory)?.subcategories && (
+        <>
+          <Text>Subcategory:</Text>
+          <Picker
+            selectedValue={selectedSubcategory}
+            onValueChange={(value) => {
+              setSelectedSubcategory(value);
+              setSelectedProduct(null); // Reset product when subcategory changes
+            }}>
+            <Picker.Item label="Select a subcategory" value={null} />
+            {categories
+              .find((cat) => cat.name === selectedCategory)
+              ?.subcategories?.map((subcategory) => (
+                <Picker.Item key={subcategory.name} label={subcategory.name} value={subcategory.name} />
+              ))}
+          </Picker>
+        </>
+      )}
+
+      {/* Dropdown for selecting a product */}
+      {selectedSubcategory && categories.find(cat => cat.name === selectedCategory)?.subcategories.find(sub => sub.name === selectedSubcategory)?.products && (
+        <>
+          <Text>Product:</Text>
+          <Picker selectedValue={selectedProduct} onValueChange={setSelectedProduct}>
+            <Picker.Item label="Select a product" value={null} />
+            {categories // Find the selected category
+              .find((cat) => cat.name === selectedCategory)
+              ?.subcategories // Find the selected subcategory
+              .find((sub) => sub.name === selectedSubcategory)
+              ?.products.map((product) => (
+                <Picker.Item key={product.name} label={product.name} value={product.name} />
+              ))}
+          </Picker>
+        </>
+      )}
+      {/* if subcategory not exist then also show product */}
+      {selectedCategory && !categories.find(cat => cat.name === selectedCategory)?.subcategories && (
+        <>
+          <Text>Product:</Text>
+          <Picker selectedValue={selectedProduct} onValueChange={setSelectedProduct}>
+            <Picker.Item label="Select a product" value={null} />
+            {categories // Find the selected category
+              .find((cat) => cat.name === selectedCategory)
+              ?.products.map((product) => (
+                <Picker.Item key={product.name} label={product.name} value={product.name} />
+              ))}
+          </Picker>
+        </>
+      )}
+
+      {/* {selectedSubcategory && (
+        <>
+          <Text>New Product Name:</Text>
+          <TextInput
+            value={newProductName}
+            onChangeText={(text) => setNewProductName(text)}
+            placeholder="Enter product name"
+            style={{ borderWidth: 1, borderColor: '#ccc', padding: 5, marginVertical: 10 }}
+          />
+
+          <Button title="Add Product" onPress={handleAddProduct} />
+        </>
+      )} */}
 
       {/* Price */}
       <View style={styles.section}>
@@ -110,9 +247,10 @@ export default function explore() {
 
       {/* Product Image */}
       <View style={styles.section}>
-        <Text style={styles.label}>Product Image</Text>
+        <Text style={styles.label}>Product Image or Video</Text>
         <View style={styles.imageRow}>
           <TouchableOpacity style={styles.addImageButton}
+          onPress={pickImage}
           >
             <Ionicons name="add" size={24} color="white" />
           </TouchableOpacity>
@@ -174,11 +312,13 @@ export default function explore() {
     
           {/* Subject Cards */}
           {subjects.map((subject, index) => (
+            <TouchableOpacity key={index}
+          
+            >
             <LinearGradient
-              key={index}
               colors={subject.colors}
               style={styles.card}
-            >
+              >
               <View style={styles.content}>
                 <Text style={styles.subjectTitle}>{subject.name}</Text>
                 <Text style={styles.subjectTagline}>
@@ -187,6 +327,8 @@ export default function explore() {
               </View>
               <Image source={subject.image} style={styles.image} />
             </LinearGradient>
+              </TouchableOpacity>
+            
           ))}
             </View>
     )}
