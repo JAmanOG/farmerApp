@@ -18,20 +18,8 @@ export default function Setting() {
   const [selectedItem, setSelectedItem] = useState(null);
   const handleSave = (value) => {
     console.log("Saved data:", value);
-    // You can update the relevant data for the item here
   };
-  //Modal
-  // const [isVisible, setIsVisible] = useState(false); // Modal visibility state
-  // const [name, setName] = useState('John Doe'); // Default name
-  // const [newName, setNewName] = useState(''); // State for user input
 
-  // const handleSave = () => {
-  //   if (newName.trim()) {
-  //     setName(newName); // Update name
-  //     setIsVisible(false); // Close modal
-  //     setNewName(''); // Clear input
-  //   }
-  // };
   
   return (
     <View style={styles.container}>
@@ -119,11 +107,6 @@ export default function Setting() {
             <Text style={styles.username}>Customer Username</Text>
           </View>
 
-          {/* Steps Today */}
-          {/* <View style={styles.stepsContainer}>
-        <Text style={styles.stepsNumber}>6 859</Text>
-        <Text style={styles.stepsText}>Steps today</Text>
-      </View> */}
 
           {/* Menu Items */}
           <View style={styles.menuContainer}>
@@ -132,8 +115,8 @@ export default function Setting() {
                 key={index}
                 style={styles.menuItem}
                 onPress={() => {
-                  setSelectedItem(item); // Set the selected item
-                  setModalVisible(true); // Open modal
+                  setSelectedItem(item); 
+                  setModalVisible(true); 
                 }}              >
                 <View style={styles.menuTextContainer}>
                   <Ionicons
@@ -166,9 +149,9 @@ export default function Setting() {
           onSave={handleSave}
           title={selectedItem.label}
           placeholder={`Enter ${selectedItem.label}`}
-          initialValue={selectedItem} // Pass the initial data to the modal
+          initialValue={selectedItem}
         />
-      )}        </>
+      )}</>
       )}
     </View>
   );

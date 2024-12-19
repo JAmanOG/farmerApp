@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import { categories } from '../../constants';
 import LocationContext from '../../context/LocationContext';
+import { useRouter } from "expo-router";
 
 export default function explore() {
   const {location} = React.useContext(LocationContext);
@@ -30,7 +31,12 @@ export default function explore() {
   const [availability, setAvailability] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state
   const { mode, toggleRole, isDisabled } = React.useContext(ModeContext);
+  const router = useRouter();
+  const [productCat, setProductCat] = useState(null);
+  const [error, setError] = useState(null); // Error state
+
 
   // States for managing selected options and new product addition
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -38,31 +44,49 @@ export default function explore() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [newProductName, setNewProductName] = useState("");
 
-  // const handleAddProduct = () => {
-  //   if (selectedCategory && selectedSubcategory && newProductName) {
-  //     // Find the selected category
-  //     const category = categories.find(cat => cat.name === selectedCategory);
+const handleCategoriesSelect = async (category) => {
+  console.log("Selected category:", category);
+setLoading(true);
+setError(null);
+try {
+  const data = fetchDataForCategory(category);
+  console.log("Data:", data);
+  if (data) {
+    setProductCat(data);
+  }
 
-  //     // Ensure subcategories exist before accessing
-  //     if (category && category.subcategories) {
-  //       const subcategory = category.subcategories.find(sub => sub.name === selectedSubcategory);
+  setLoading(false);
+  console.log("Productdetails:", productCat);
+  router.push({
+    pathname: 'categories/Productpage',
+    params: { product: JSON.stringify(data) }
+  });
 
-  //       // Add the new product to the selected subcategory
-  //       if (subcategory) {
-  //         subcategory.products.push({ name: newProductName });
-  //         setNewProductName("");
-  //         alert("Product added successfully!");
-  //       } else {
-  //         alert("Subcategory not found!");
-  //       }
-  //     } else {
-  //       alert("Category not found or has no subcategories!");
-  //     }
-  //   } else {
-  //     alert("Please select a category, subcategory, and enter a product name.");
-  //   }
-  // };
+} catch (error) {
+  setError('Failed to load data'); // Set error if fetch fails
+  setLoading(false); // Stop loading
+}
+  };
 
+  const fetchDataForCategory = async(Category) => {
+    // Fetch data for the selected category
+    console.log("Fetching data for category:", Category);
+
+    // Simulate fetching data from an API
+ try {
+     const data = categories.find((cat) => cat.name === Category);
+ 
+     if (data) {
+       console.log("Data found for category:", data);
+     }
+ 
+    return data;
+   } catch (error) {
+     console.error("Error fetching data for category:", error);
+     setError("Error fetching data for category. Please try again later.");
+   }
+};
+  
 
   const subjects = [
     { name: 'Crops', colors: ['#FF5F6D', '#FFC371'], image: { uri: "https://via.placeholder.com/100" } },
@@ -120,27 +144,6 @@ export default function explore() {
           onChangeText={setDescription}
         />
       </View>
-
-      {/* Product Category */}
-      {/* <View style={styles.section}>
-        <Text style={styles.label}>Category</Text>
-        <Picker
-          selectedValue={category}
-          style={styles.picker}
-          onValueChange={(itemValue) => setCategory(itemValue)}>
-          <Picker.Item label="Select a category" value="" />
-          <Picker.Item label="Crops" value="crops" />
-          <Picker.Item label="Fruits" value="fruits" />
-          <Picker.Item label="Dairy Products" value="dairy_products" />
-          <Picker.Item label="Spices" value="spices" />
-          <Picker.Item label="Flowers" value="flowers" />
-          <Picker.Item label="Herbs and Medicinal Plants" value="Herbs_medicinal_plants" />
-          <Picker.Item label="Seeds and Saplings" value="seeds_and_saplings" />
-          <Picker.Item label="Processed Foods" value="Processed_and_foods" />
-          <Picker.Item label="Fertilizers and Pesticides" value="fertilizers_and_perticides" />
-        </Picker>
-      </View>
- */}
 
 <Text>Category:</Text>
       <Picker
@@ -206,20 +209,6 @@ export default function explore() {
           </Picker>
         </>
       )}
-
-      {/* {selectedSubcategory && (
-        <>
-          <Text>New Product Name:</Text>
-          <TextInput
-            value={newProductName}
-            onChangeText={(text) => setNewProductName(text)}
-            placeholder="Enter product name"
-            style={{ borderWidth: 1, borderColor: '#ccc', padding: 5, marginVertical: 10 }}
-          />
-
-          <Button title="Add Product" onPress={handleAddProduct} />
-        </>
-      )} */}
 
       {/* Price */}
       <View style={styles.section}>
@@ -304,16 +293,14 @@ export default function explore() {
     </View>):(
             <View className='mb-10'>
 
-          {/* Header */}
           <Text style={styles.title}>Explore 🚀</Text>
           <Text style={styles.subtitle}>
-            Never trust anyone who has not brought a book with them.
           </Text>
     
-          {/* Subject Cards */}
           {subjects.map((subject, index) => (
+
             <TouchableOpacity key={index}
-          
+            onPress={() => handleCategoriesSelect(subject.name)}
             >
             <LinearGradient
               colors={subject.colors}
@@ -332,6 +319,12 @@ export default function explore() {
           ))}
             </View>
     )}
+          {/* Loading state */}
+          {loading && <Text>Loading...</Text>}
+
+{/* Error state */}
+{error && <Text style={{ color: 'red' }}>{error}</Text>}
+
         </ScrollView>
 
     </>

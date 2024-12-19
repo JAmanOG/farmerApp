@@ -10,6 +10,9 @@ import {
   StyleSheet,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import * as ImagePicker from 'expo-image-picker';
+import updateUser from "../lib/appwrite"
+
 
 const CustomModalForm = ({
   isVisible,
@@ -30,6 +33,17 @@ const CustomModalForm = ({
       onClose();
     }
   };
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    await updateUser(inputValue,result);
+    console.log(result);
+  };
 
   return (
     <Modal transparent={true} visible={isVisible} animationType="slide">
@@ -47,10 +61,12 @@ const CustomModalForm = ({
           <ScrollView contentContainerStyle={styles.content}>
             {initialValue.label === "Profile Picture & Name" ? (
               <View style={styles.profileSection}>
-                <Image
-                  source={{ uri: "https://via.placeholder.com/100" }}
-                  style={styles.profileImage}
-                />
+                <TouchableOpacity onPress={pickImage}>
+                  <Image
+                    source={{ uri: "https://via.placeholder.com/100" }}
+                    style={styles.profileImage}
+                  />
+                </TouchableOpacity>
                 <TextInput
                   style={styles.input}
                   placeholder="Update Name"

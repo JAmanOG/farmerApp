@@ -188,6 +188,10 @@ const RootLayout = () => {
           }
         }
         />
+        <Stack.Screen
+        name="categories/Productpage"
+        />
+        
         <Slot />
       </Stack>
       </ModeProvider>
