@@ -30,6 +30,10 @@ const GlobalProvider = ({ children }) => {
         };
         fetchUser();
 
+        if(user === null){
+            fetchUser();
+        }
+
     }, []);
     return (
         <GlobalContext.Provider value={{

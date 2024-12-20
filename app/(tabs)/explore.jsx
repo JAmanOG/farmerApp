@@ -8,9 +8,10 @@ import {
   ScrollView,
   Image,
   Button,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import ModeContext from "../../context/Modecontext";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,31 +19,19 @@ import * as ImagePicker from 'expo-image-picker';
 import { categories } from '../../constants';
 import LocationContext from '../../context/LocationContext';
 import { useRouter } from "expo-router";
+import { indiaStatesAndDistricts } from '../../constants';
+import { uploadImage,createForm } from '../../lib/appwrite';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export default function explore() {
   const {location} = React.useContext(LocationContext);
   const loc = location;
-  const [productName, setProductName] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [price, setPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [region, setRegion] = useState(loc.formattedAddress || '');
-  const [availability, setAvailability] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [loading, setLoading] = useState(false); // Loading state
-  const { mode, toggleRole, isDisabled } = React.useContext(ModeContext);
+  const [loading, setLoading] = useState(false);
+  const { mode } = React.useContext(ModeContext);
   const router = useRouter();
   const [productCat, setProductCat] = useState(null);
-  const [error, setError] = useState(null); // Error state
-
-
-  // States for managing selected options and new product addition
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [newProductName, setNewProductName] = useState("");
+  const [error, setError] = useState(null);
+  const [image, setImage] = useState(null);
 
 const handleCategoriesSelect = async (category) => {
   console.log("Selected category:", category);
@@ -102,195 +91,362 @@ try {
   ];
   
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    console.log(result);
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],  // Limit to images
+        allowsEditing: true,
+        quality: 1,
+      });
+  
+      if (!result.canceled) {
+        const selectedImage = result.assets[0];
+        console.log("Image picked successfully:", selectedImage);
+  
+        let imageToStore = selectedImage;
+  
+        // If the image is in .jpeg format, convert it to .jpg
+        if (selectedImage.uri && selectedImage.uri.endsWith('.jpeg')) {
+          const manipResult = await ImageManipulator.manipulateAsync(
+            selectedImage.uri,
+            [],
+            { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+          );
+  
+          // Update the image properties without changing the URI directly
+          imageToStore = {
+            ...selectedImage,
+            uri: manipResult.uri,  // Update URI with converted image
+            mimeType: 'image/jpeg',  // Ensure MIME type remains as JPEG
+            fileName: selectedImage.fileName.replace('.jpeg', '.jpg'),  // Update file extension
+          };
+        }
+  
+        // Set the image object to the state or formData
+        setImage(imageToStore);  // Save the manipulated image object to state
+        console.log("Updated Image:", imageToStore);
+  
+        // If you need to update a form field with the image data
+        handleChange('imageId', imageToStore);  // Update imageId in formData with the full image object
+      } else {
+        console.log("Image picking canceled");
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error picking image", error.message);
+    }
   };
 
+  const loca = loc.formattedAddress === null ? 'Location not available' : loc.formattedAddress; 
+  
+  
+  const [formData, setFormData] = useState({
+    productname: '',
+    description: '',
+    price: '',
+    quantityavailable: '',
+    category: null,
+    subcategory: null,
+    product: null,
+    address: loca,
+    imageId: image,
+    state: null,
+    district: null,
+    availability: false,
+    validDate: new Date(),
+    DateState: false,
+  });
 
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async() => {
+    if (!formData.productname || !formData.price) {
+      setError("Product name and price are required.");
+      return;
+    }
+    try {
+      //removing DateState from formData
+
+        console.log("Form data:", formData);
+      const product = await createForm(formData);
+      console.log("Product created successfully:", product);
+
+      // Reset the form
+      setFormData({
+        productname: '',
+        description: '',
+        price: '',
+        quantityavailable: '',
+        category: null,
+        subcategory: null,
+        product: null,
+        address: loca,
+        imageId: null,
+        state: null,
+        district: null,
+        availability: false,
+        validDate: new Date(),
+        DateState: false,
+      });
+      setImage(null);
+    }
+    catch (error) {
+      console.error("Error creating product:", error);
+      setError("Error creating product. Please try again later.");
+    }
+    
+    // Proceed with API submission or navigation
+  };
+  
+  
   return (
     <>
           <ScrollView style={styles.containers}>
 
     {mode == 'farmer'?(
     <View>
-      <Text style={styles.header}>Add Product</Text>
-      <Text style={styles.subHeader}>Add your product for your customers</Text>
-
-      {/* Product Name */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Product Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter product name"
-          value={productName}
-          onChangeText={setProductName}
-        />
-      </View>
-
-      {/* Product Description */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Description</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Enter product description"
-          value={description}
-          multiline
-          onChangeText={setDescription}
-        />
-      </View>
-
+    <Text style={styles.header}>Add Product</Text>
+    <Text style={styles.subHeader}>Add your product for your customers</Text>
+  
+    {/* Product Name */}
+    <View style={styles.section}>
+      <Text style={styles.label}>Product Name</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter product name"
+        value={formData.productname}
+        onChangeText={(text) => handleChange('productname', text)}
+      />
+    </View>
+  
+    {/* Product Description */}
+    <View style={styles.section}>
+      <Text style={styles.label}>Description</Text>
+      <TextInput
+        style={[styles.input, styles.textArea]}
+        placeholder="Enter product description"
+        value={formData.description}
+        multiline
+        onChangeText={(text) => handleChange('description', text)}
+      />
+    </View>
+  
+    {/* Category */}
+{/* Category */}
 <Text>Category:</Text>
-      <Picker
-        selectedValue={selectedCategory}
-        onValueChange={(value) => {
-          setSelectedCategory(value);
-          setSelectedSubcategory(null); // Reset subcategory when category changes
-          setSelectedProduct(null); // Reset product when category changes
-        }}>
-        <Picker.Item label="Select a category" value={null} />
-        {categories.map((category) => (
-          <Picker.Item key={category.name} label={category.name} value={category.name} />
-        ))}
-      </Picker>
+<Picker
+  selectedValue={formData.category}
+  onValueChange={(value) => {
+    handleChange('category', value);
+    handleChange('subcategory', null); // Reset subcategory
+    handleChange('product', null);    // Reset product
+  }}
+>
+  <Picker.Item label="Select a category" value={null} />
+  {categories.map((category) => (
+    <Picker.Item key={category.name} label={category.name} value={category.name} />
+  ))}
+</Picker>
 
-      {/* Dropdown for selecting a subcategory */}
-      {selectedCategory && categories.find(cat => cat.name === selectedCategory)?.subcategories && (
-        <>
-          <Text>Subcategory:</Text>
-          <Picker
-            selectedValue={selectedSubcategory}
-            onValueChange={(value) => {
-              setSelectedSubcategory(value);
-              setSelectedProduct(null); // Reset product when subcategory changes
-            }}>
-            <Picker.Item label="Select a subcategory" value={null} />
-            {categories
-              .find((cat) => cat.name === selectedCategory)
-              ?.subcategories?.map((subcategory) => (
-                <Picker.Item key={subcategory.name} label={subcategory.name} value={subcategory.name} />
-              ))}
-          </Picker>
-        </>
-      )}
+{/* Subcategory or Product */}
+{formData.category && (
+  <>
+    {/* Check if subcategories exist */}
+    {categories.find((cat) => cat.name === formData.category)?.subcategories ? (
+      <>
+        {/* Subcategory */}
+        <Text>Subcategory:</Text>
+        <Picker
+          selectedValue={formData.subcategory}
+          onValueChange={(value) => {
+            handleChange('subcategory', value);
+            handleChange('product', null); // Reset product
+          }}
+        >
+          <Picker.Item label="Select a subcategory" value={null} />
+          {categories
+            .find((cat) => cat.name === formData.category)
+            ?.subcategories.map((subcategory) => (
+              <Picker.Item key={subcategory.name} label={subcategory.name} value={subcategory.name} />
+            ))}
+        </Picker>
 
-      {/* Dropdown for selecting a product */}
-      {selectedSubcategory && categories.find(cat => cat.name === selectedCategory)?.subcategories.find(sub => sub.name === selectedSubcategory)?.products && (
-        <>
-          <Text>Product:</Text>
-          <Picker selectedValue={selectedProduct} onValueChange={setSelectedProduct}>
-            <Picker.Item label="Select a product" value={null} />
-            {categories // Find the selected category
-              .find((cat) => cat.name === selectedCategory)
-              ?.subcategories // Find the selected subcategory
-              .find((sub) => sub.name === selectedSubcategory)
-              ?.products.map((product) => (
-                <Picker.Item key={product.name} label={product.name} value={product.name} />
-              ))}
-          </Picker>
-        </>
-      )}
-      {/* if subcategory not exist then also show product */}
-      {selectedCategory && !categories.find(cat => cat.name === selectedCategory)?.subcategories && (
-        <>
-          <Text>Product:</Text>
-          <Picker selectedValue={selectedProduct} onValueChange={setSelectedProduct}>
-            <Picker.Item label="Select a product" value={null} />
-            {categories // Find the selected category
-              .find((cat) => cat.name === selectedCategory)
-              ?.products.map((product) => (
-                <Picker.Item key={product.name} label={product.name} value={product.name} />
-              ))}
-          </Picker>
-        </>
-      )}
-
-      {/* Price */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Price (in Rp)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter price"
-          value={price}
-          keyboardType="numeric"
-          onChangeText={setPrice}
-        />
-      </View>
-
-      {/* Quantity Available */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Quantity Available</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter quantity"
-          value={quantity}
-          keyboardType="numeric"
-          onChangeText={setQuantity}
-        />
-      </View>
-
-      {/* Product Image */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Product Image or Video</Text>
-        <View style={styles.imageRow}>
-          <TouchableOpacity style={styles.addImageButton}
-          onPress={pickImage}
-          >
-            <Ionicons name="add" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Location/Region */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Location/Region</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter region"
-          value={region}
-          onChangeText={setRegion}
-        />
-      </View>
-
-      {/* Product Availability */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Availability</Text>
-        <TouchableOpacity
-          style={styles.toggleButton}
-          onPress={() => setAvailability(!availability)}>
-          <Text style={styles.toggleText}>{availability ? 'Available' : 'Not Available'}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Select Date */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Product Date</Text>
-        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
-          <Text style={styles.datePickerText}>{selectedDate.toDateString()}</Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            display="default"
-            onChange={(event, date) => {
-              setShowDatePicker(false);
-              if (date) setSelectedDate(date);
-            }}
-          />
+        {/* Product */}
+        {formData.subcategory && (
+          <>
+            <Text>Product:</Text>
+            <Picker
+              selectedValue={formData.product}
+              onValueChange={(value) => handleChange('product', value)}
+            >
+              <Picker.Item label="Select a product" value={null} />
+              {categories
+                .find((cat) => cat.name === formData.category)
+                ?.subcategories.find((sub) => sub.name === formData.subcategory)
+                ?.products.map((product) => (
+                  <Picker.Item key={product.name} label={product.name} value={product.name} />
+                ))}
+            </Picker>
+          </>
         )}
-      </View>
+      </>
+    ) : (
+      <>
+        {/* Direct Product Selection */}
+        <Text>Product:</Text>
+        <Picker
+          selectedValue={formData.product}
+          onValueChange={(value) => handleChange('product', value)}
+        >
+          <Picker.Item label="Select a product" value={null} />
+          {categories
+            .find((cat) => cat.name === formData.category)
+            ?.products.map((product) => (
+              <Picker.Item key={product.name} label={product.name} value={product.name} />
+            ))}
+        </Picker>
+      </>
+    )}
+  </>
+)}
 
-      {/* Submit Button */}
-      <TouchableOpacity style={styles.submitButton}>
-        <Text style={styles.submitButtonText}>Add Product</Text>
+  
+    {/* Price */}
+    <View style={styles.section}>
+      <Text style={styles.label}>Price (in Kg)</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter price"
+        value={formData.price}
+        keyboardType="numeric"
+        onChangeText={(text) => handleChange('price', text)}
+      />
+    </View>
+  
+    {/* Quantity Available */}
+    <View style={styles.section}>
+      <Text style={styles.label}>Quantity Available</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter quantity"
+        value={formData.quantityavailable}
+        keyboardType="numeric"
+        onChangeText={(text) => handleChange('quantityavailable', text)}
+      />
+    </View>
+    {
+      image ? (
+        <Image source={{ uri: image?.uri  }} style={styles.productImage} />
+      ) : null
+    }
+  
+    {/* Product Image */}
+    <View style={styles.section}>
+      <Text style={styles.label}>Product Image</Text>
+      <View style={styles.imageRow}>
+        <TouchableOpacity
+          style={styles.addImageButton}
+          onPress={pickImage}
+        >
+          <Ionicons name="add" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+
+
+
+    {/* Location/address */}
+    <View style={styles.section}>
+      <Text style={styles.label}>Address/landmark</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter address"
+        value={formData.address}
+        onChangeText={(text) => handleChange('address', text)}
+      />
+    </View>
+  {/* State Selection */}
+<View style={styles.section}>
+  <Text style={styles.label}>State</Text>
+  <Picker
+    selectedValue={formData.state}
+    onValueChange={(value) => {
+      handleChange('state', value);
+      handleChange('district', null);
+    }}
+  >
+    <Picker.Item label="Select a state" value={null} />
+    {Object.entries(indiaStatesAndDistricts).map(([state]) => (
+      <Picker.Item key={state} label={state} value={state} />
+    ))}
+  </Picker>
+</View>
+
+{
+formData.state && indiaStatesAndDistricts[formData.state]?.length > 0 && (
+  <View style={styles.section}>
+    <Text style={styles.label}>District</Text>
+    <Picker
+      selectedValue={formData.district}
+      onValueChange={(value) => handleChange('district', value)}
+    >
+      <Picker.Item label="Select a district" value={null} />
+      {indiaStatesAndDistricts[formData.state].map((district) => (
+        <Picker.Item key={district} label={district} value={district} />
+      ))}
+    </Picker>
+  </View>
+)}
+
+  
+    {/* Product Availability */}
+    <View style={styles.section}>
+      <Text style={styles.label}>Availability Now</Text>
+      <TouchableOpacity
+        style={styles.toggleButton}
+        onPress={() => handleChange('availability', !formData.availability)}
+      >
+        <Text style={styles.toggleText}>{formData.availability ? 'Available' : 'Not Available'}</Text>
       </TouchableOpacity>
-    </View>):(
+    </View>
+  
+    {/* Select Date */}
+    <View style={styles.section}>
+      <Text style={styles.label}>LastDate to Buy</Text>
+      <TouchableOpacity
+        onPress={() => handleChange('DateState', true)}
+        style={styles.datePickerButton}
+      >
+        <Text style={styles.datePickerText}>{formData.validDate.toDateString()}</Text>
+      </TouchableOpacity>
+      {formData.DateState && (
+        <DateTimePicker
+          value={formData.validDate}
+          mode="date"
+          display="default"
+          onChange={(event, date) => {
+            if (event.type === 'set' && date) {
+              handleChange('validDate', date); // Set the selected date
+            }
+            handleChange('DateState', false); // Close the picker
+          }}
+        />
+      )}
+    </View>
+  
+    {/* Submit Button */}
+    <TouchableOpacity
+      style={styles.submitButton}
+      onPress={handleSubmit}
+    >
+      <Text style={styles.submitButtonText}>Add Product</Text>
+    </TouchableOpacity>
+  </View>
+  ):(
             <View className='mb-10'>
 
           <Text style={styles.title}>Explore 🚀</Text>
@@ -319,10 +475,8 @@ try {
           ))}
             </View>
     )}
-          {/* Loading state */}
           {loading && <Text>Loading...</Text>}
 
-{/* Error state */}
 {error && <Text style={{ color: 'red' }}>{error}</Text>}
 
         </ScrollView>
@@ -330,6 +484,7 @@ try {
     </>
   );
 }
+
 
 const styles = StyleSheet.create({
   containers: {

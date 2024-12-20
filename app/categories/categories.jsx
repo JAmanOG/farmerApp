@@ -2,8 +2,10 @@ import React from "react";
 import { View, FlatList, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Appbar, Card, Button } from "react-native-paper";
+import { useRouter } from "expo-router";
 
 const Categories = () => {
+  const router = useRouter();
   const params = useLocalSearchParams();
   const { category } = params;
 
@@ -12,8 +14,8 @@ const Categories = () => {
 
   if (!parsedCategory) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-100">
-        <Text className="text-lg text-gray-500">Loading...</Text>
+      <View style={styles.centeredView}>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
@@ -23,11 +25,9 @@ const Categories = () => {
     (!parsedCategory.subcategories || parsedCategory.subcategories.length === 0)
   ) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-100 px-4">
-        <Text className="text-2xl font-bold text-gray-700 mb-4">
-          {parsedCategory.category}
-        </Text>
-        <Text className="text-gray-500 text-lg">
+      <View style={styles.centeredView}>
+        <Text style={styles.categoryTitle}>{parsedCategory.category}</Text>
+        <Text style={styles.noContentText}>
           No products or subcategories available in this category.
         </Text>
       </View>
@@ -41,7 +41,6 @@ const Categories = () => {
         <Appbar.Content title="Categories" titleStyle={styles.headerTitle} />
       </Appbar.Header>
 
-      {/* Category List */}
       <FlatList
         data={parsedCategory.products || parsedCategory.subcategories}
         keyExtractor={(item, index) => item.name || index.toString()}
@@ -57,17 +56,27 @@ const Categories = () => {
                   subItem.name || subIndex.toString()
                 }
                 renderItem={({ item: subProduct }) => (
-                  <Card style={styles.productCard}>
-                    <Card.Cover
-                      source={{
-                        uri: subProduct.image || "https://via.placeholder.com/150",
-                      }}
-                      style={styles.productImage}
-                    />
-                    <Card.Content>
-                      <Text style={styles.productName}>{subProduct.name}</Text>
-                    </Card.Content>
-                  </Card>
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/categories/singleProduct",
+                        params: { subcat: JSON.stringify(subProduct.name) }, // Use subProduct instead of product
+                      })
+                    }
+                  >
+                    <Card style={styles.productCard}>
+                      <Card.Cover
+                        source={{
+                          uri: subProduct.image || "https://via.placeholder.com/150",
+                        }}
+                        style={styles.productImage}
+                      />
+                      <Card.Content>
+                        <Text style={styles.productName}>{subProduct.name}</Text>
+                      </Card.Content>
+                    </Card>
+                  </TouchableOpacity>
                 )}
                 showsHorizontalScrollIndicator={false}
               />
@@ -87,7 +96,12 @@ const Categories = () => {
                 <Button
                   mode="contained"
                   style={styles.viewButton}
-                  onPress={() => {}}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/categories/singleProduct",
+                      params: { procat: JSON.stringify(item.name) }, // Use item instead of product
+                    })
+                  }
                 >
                   View
                 </Button>
@@ -96,13 +110,6 @@ const Categories = () => {
           )
         }
       />
-
-      {/* Pagination (Optional) */}
-      {/* <View style={styles.paginationContainer}>
-        <Button mode="contained" style={styles.loadMoreButton}>
-          Load More
-        </Button>
-      </View> */}
     </View>
   );
 };

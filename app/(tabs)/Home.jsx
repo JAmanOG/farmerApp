@@ -312,40 +312,101 @@ export default function home() {
   const flashSaleItems = [
     {
       id: 1,
-      title: "Apple iPhone 15 Pro",
-      price: "£699.00",
-      originalPrice: "£739.00",
+      productName: "Millets (Bajra)",
+      description: "High-quality Bajra for a healthy diet",
+      price: "5440",
+      quantityAvailable: "1000",
+      category: "Crops",
+      subcategory: "Grains",
+      product: "Millets (Bajra)",
+      address: "Location1", // Replace with actual location
+      imageId: "image_id_1", // Replace with actual image ID
+      state: "State1", // Replace with actual state
+      district: "District1", // Replace with actual district
+      availability: true,
+      validDate: new Date(),
+      dateState: false,
+      originalPrice: "5655.00",
       image: "https://link-to-image.com/iphone.png",
     },
     {
       id: 2,
-      title: "Samsung Galaxy Buds Pro",
-      price: "£69.00",
-      originalPrice: "£85.00",
-      image: "https://link-to-image.com/galaxy-buds.png",
+      productName: "Lentils",
+      description: "Premium quality lentils for daily use",
+      price: "1500",
+      quantityAvailable: "500",
+      category: "Crops",
+      subcategory: "Pulses",
+      product: "Lentils",
+      address: "Location2", // Replace with actual location
+      imageId: "image_id_2", // Replace with actual image ID
+      state: "State2", // Replace with actual state
+      district: "District2", // Replace with actual district
+      availability: true,
+      validDate: new Date(),
+      dateState: false,
+      originalPrice: "1800.00",
+      image: "https://link-to-image.com/iphone.png",
     },
     {
       id: 3,
-      title: "Samsung Galaxy Buds Pro",
-      price: "£69.00",
-      originalPrice: "£85.00",
-      image: "https://link-to-image.com/galaxy-buds.png",
+      productName: "Potatoes",
+      description: "Fresh potatoes sourced directly from farms",
+      price: "300",
+      quantityAvailable: "2000",
+      category: "Vegetables",
+      subcategory: "Common Vegetables",
+      product: "Potatoes",
+      address: "Location3", // Replace with actual location
+      imageId: "image_id_3", // Replace with actual image ID
+      state: "State3", // Replace with actual state
+      district: "District3", // Replace with actual district
+      availability: true,
+      validDate: new Date(),
+      dateState: false,
+      originalPrice: "350.00",
+      image: "https://link-to-image.com/iphone.png",
     },
     {
       id: 4,
-      title: "Samsung Galaxy Buds Pro",
-      price: "£69.00",
-      originalPrice: "£85.00",
-      image: "https://link-to-image.com/galaxy-buds.png",
+      productName: "Mango",
+      description: "Juicy mangoes from tropical regions",
+      price: "800",
+      quantityAvailable: "1500",
+      category: "Fruits",
+      subcategory: "Tropical Fruits",
+      product: "Mango",
+      address: "Location4", // Replace with actual location
+      imageId: "image_id_4", // Replace with actual image ID
+      state: "State4", // Replace with actual state
+      district: "District4", // Replace with actual district
+      availability: true,
+      validDate: new Date(),
+      dateState: false,
+      originalPrice: "950.00",
+      image: "https://link-to-image.com/iphone.png",
     },
     {
       id: 5,
-      title: "Samsung Galaxy Buds Pro",
-      price: "£69.00",
-      originalPrice: "£85.00",
-      image: "https://link-to-image.com/galaxy-buds.png",
+      productName: "Organic Vegetables",
+      description: "Fresh organic vegetables directly from farms",
+      price: "1200",
+      quantityAvailable: "800",
+      category: "Organic Products",
+      subcategory: null,
+      product: "Organic Vegetables",
+      address: "Location5", // Replace with actual location
+      imageId: "image_id_5", // Replace with actual image ID
+      state: "State5", // Replace with actual state
+      district: "District5", // Replace with actual district
+      availability: true,
+      validDate: new Date(),
+      dateState: false,
+      originalPrice: "1500.00",
+      image: "https://link-to-image.com/iphone.png",
     },
   ];
+  
 
   const displayLocation = () => {
     if (errorMsg) return errorMsg;
@@ -387,7 +448,7 @@ export default function home() {
             }
           >
             <Text className={"text-gray-800 font-semibold"}>
-              Welcome back <Text className={"font-bold text-purple"}>{user.username}</Text>{" "}
+              Welcome back <Text className={"font-bold text-purple"}>{user?.username || 'Amans'}</Text>{" "}
               🙏
             </Text>
             <Image
@@ -457,7 +518,7 @@ export default function home() {
                   source={{ uri: item.image }}
                   className="w-24 h-24 rounded-lg"
                 />
-                <Text className="mt-2 text-sm font-bold">{item.title}</Text>
+                <Text className="mt-2 text-sm font-bold">{item.productName}</Text>
                 <View className="flex-row items-center">
                   <Text className="font-bold text-purple">{item.price}</Text>
                   <Text className="text-gray-400 line-through ml-2 text-sm">
@@ -485,7 +546,7 @@ export default function home() {
                   source={{ uri: item.image }}
                   className="w-24 h-24 rounded-lg"
                 />
-                <Text className="mt-2 text-sm font-bold">{item.title}</Text>
+                <Text className="mt-2 text-sm font-bold">{item.productName}</Text>
                 <View className="flex-row items-center">
                   <Text className="font-bold text-purple">{item.price}</Text>
                   <Text className="text-gray-400 line-through ml-2 text-sm">
@@ -513,7 +574,7 @@ export default function home() {
                   source={{ uri: item.image }}
                   className="w-24 h-24 rounded-lg"
                 />
-                <Text className="mt-2 text-sm font-bold">{item.title}</Text>
+                <Text className="mt-2 text-sm font-bold">{item.productName}</Text>
                 <View className="flex-row items-center">
                   <Text className="font-bold text-purple">{item.price}</Text>
                   <Text className="text-gray-400 line-through ml-2 text-sm">

@@ -112,23 +112,20 @@
 // // };
 
 // // export default RootLayout;
-
-import { Text } from "react-native";
 import React, { useEffect } from "react";
 import { Slot, SplashScreen, Stack } from "expo-router";
-import "../global.css";
 import { useFonts } from "expo-font";
 import GlobalProvider from "../context/GlobalProvider";
 import ModeProvider from "../context/ModeProvider";
 import LocationProvider from "../context/LocationProvider";
-
+import "../global.css";
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
     MerriweatherBlack: require("../assets/fonts/MerriweatherBlack.ttf"),
     merriweatherbold: require("../assets/fonts/MerriweatherBold.ttf"),
-    merriweatherbold: require("../assets/fonts/Merriweather-BoldItalic.ttf"),
+    merriweatherboldItalic: require("../assets/fonts/Merriweather-BoldItalic.ttf"),
   });
 
   useEffect(() => {
@@ -144,57 +141,43 @@ const RootLayout = () => {
   return (
     <GlobalProvider>
       <LocationProvider>
-      <ModeProvider>
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="(auth)"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="categories/categories"
-          options={
-            {
-              title: "Categories",
-            }
-          }
-        />
-        <Stack.Screen
-          name="categories/allcategories"
-          options={
-            {
-              title: "All Categories",
-            }
-          }
-        />
-        <Stack.Screen
-        name="categories/productDetailsPage"
-        options={
-          {
-            title: "Product Details",
-          }
-        }
-        />
-        <Stack.Screen
-        name="categories/Productpage"
-        />
-        
-        <Slot />
-      </Stack>
-      </ModeProvider>
+        <ModeProvider>
+          <Stack>
+            {/* Define the screens and their options */}
+            <Stack.Screen
+              name="index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="(auth)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="(tabs)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="categories/categories"
+              options={{ title: "Categories" }}
+            />
+            <Stack.Screen
+              name="categories/allcategories"
+              options={{ title: "All Categories" }}
+            />
+            <Stack.Screen
+              name="categories/productDetailsPage"
+              options={{ title: "Product Details" }}
+            />
+            <Stack.Screen
+              name="categories/Productpage"
+            />
+            <Stack.Screen
+              name="categories/singleProduct"
+            />
+            {/* Slot to render nested child routes */}
+            <Slot />
+          </Stack>
+        </ModeProvider>
       </LocationProvider>
     </GlobalProvider>
   );

@@ -5,7 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
 import FormField from "../../components/Formfield";
 import CustomButton from "../../components/custombutton";
-import { SignIn as SignInPage, } from "../../lib/appwrite";
+import { signIn as SignInPage, } from "../../lib/appwrite";
+import '../../global.css';
 const SocialButton = ({ uri, alt, handlePress }) => (
   <TouchableOpacity
     className="bg-white w-16 h-16 rounded-lg m-2 shadow-lg flex items-center justify-center"
@@ -46,12 +47,12 @@ const SignIn = () => {
   return (
     <SafeAreaView className="bg-gray-100 h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="items-center w-full px-4 py-6">
+        <View className="items-center w-full px-4 py-8">
           {/* Header Section */}
           <Text className="text-4xl font-bold mt-4 text-center font-merriweatherblack text-black">
             Create an account
           </Text>
-          <Text className="text-center font-merriweatherblack text-base font-bold text-black mt-4">
+          <Text className="text-center font-merriweatherblack text-base font-bold text-black my-4">
             Already have an account?{" "}
             <Link href="/sign-in" className="text-purple">
               Login
@@ -64,7 +65,7 @@ const SignIn = () => {
             value={form.email}
             onChange={(value) => handleChange("email", value)}
             placeholder="Email address"
-            otherStyles="mt-7"
+            // otherStyles="mt-7"
             keyboardType="email-address"
           />
 
@@ -73,7 +74,7 @@ const SignIn = () => {
             value={form.password}
             onChange={(value) => handleChange("password", value)}
             placeholder="Password"
-            otherStyles="mt-7"
+            // otherStyles="mt-7"
             secureTextEntry={true}
           />
 

@@ -8,8 +8,10 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { useRouter } from "expo-router";
 
 const ProductPage = () => {
+  const router = useRouter();
   const params = useLocalSearchParams();
   const { product } = params;
 
@@ -40,8 +42,7 @@ const ProductPage = () => {
   if (!subcategories) {
     subProduct = parsedProduct._j.products
 }
-console.log("Subcategories:", subcategories);
-console.log("SubProduct:", subProduct);
+
 
 const handleAddFilter = (filter) => {
     if (!Array.isArray(subcategories) || subcategories.length === 0) {
@@ -118,15 +119,23 @@ const handleAddFilter = (filter) => {
         <View style={styles.container}>
           {subProduct ? (
             subProduct.map((product) => (
+              <TouchableOpacity key={product._id} onPress={() => 
+                router.push({ 
+                  pathname: "categories/singleProduct",
+                  params: {procat: JSON.stringify(product.name)}}
+                )
+
+              }>
               <View key={product._id} style={styles.productCard}>
                 <Image
                   source={{
                     uri: product.image || "https://via.placeholder.com/150",
                   }}
                   style={styles.productImage}
-                />
+                  />
                 <Text style={styles.productName}>{product?.name}</Text>
               </View>
+                  </TouchableOpacity>
             ))
           ) : (
             <Text style={styles.noProductText}>No products match your filters.</Text>

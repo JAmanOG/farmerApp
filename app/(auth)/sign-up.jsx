@@ -57,7 +57,7 @@ const Signup = () => {
             value={form.username}
             onChange={(value) => handleChange("username", value)}
             placeholder="Username"
-            otherStyles="mt-7"
+            // otherStyles="mt-7"
             keyboardType="username"
           />
 
@@ -66,7 +66,7 @@ const Signup = () => {
             value={form.email}
             onChange={(value) => handleChange("email", value)}
             placeholder="Email address"
-            otherStyles="mt-7"
+            // otherStyles="mt-7"
             keyboardType="email-address"
           />
 
@@ -75,7 +75,7 @@ const Signup = () => {
             value={form.password}
             onChange={(value) => handleChange("password", value)}
             placeholder="Password"
-            otherStyles="mt-7"
+            // otherStyles="mt-7"
             secureTextEntry={true}
           />
 

@@ -13,9 +13,9 @@ const FormField = ({
   const [showPassword, setShowPassword] = React.useState(false);
 
   return (
-      <View className="w-full h-16 px-4 bg-white flex-row items-center rounded-lg shadow-md">
+      <View className="w-full h-16 px-4 bg-white flex-row items-center mt-3 rounded-lg shadow-md">
         <TextInput
-          className="flex-1 text-black bg-slate-500 text-base"
+          className={` flex-1 text-black bg-slate-50 text-base ${otherStyles}`}
           placeholder={placeholder}
           placeholderTextColor="#8f8593"
           value={value}

@@ -10,17 +10,30 @@ import {
 import { Ionicons, AntDesign } from "@expo/vector-icons"; // For icons
 import ModeContext from "../../context/Modecontext";
 import CustomModalForm from '../../components/customModal';
+import { signOut } from "../../lib/appwrite"; 
+import {useGlobalContext} from "../../context/GlobalProvider";
 
 export default function Setting() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const { mode, toggleRole, isDisabled } = React.useContext(ModeContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const { user } = useGlobalContext();
+
   const handleSave = (value) => {
     console.log("Saved data:", value);
   };
+  const handleLogout = async () => {
+    console.log("Logging out...");
+    // Any additional logic (e.g., navigating to the login screen) can go here
+    try {
+      // Handle the Appwrite signout here
+      await signOut(); // Assuming the signOut function is imported correctly
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
-  
   return (
     <View style={styles.container}>
       {mode == 'farmer' ? (
@@ -38,11 +51,11 @@ export default function Setting() {
           {/* Profile Picture and Info */}
           <View style={styles.profileSection}>
             <Image
-              source={{ uri: "https://via.placeholder.com/100" }}
+              source={{ uri: `${user.avator}` }}
               style={styles.profileImage}
             />
-            <Text style={styles.name}>Farmer Name</Text>
-            <Text style={styles.username}>Farmer Username</Text>
+            <Text style={styles.name}>{user?.username}</Text>
+            <Text style={styles.username}>Farmer Profile</Text>
           </View>
 
           {/* Steps Today */}
@@ -100,11 +113,11 @@ export default function Setting() {
           {/* Profile Picture and Info */}
           <View style={styles.profileSection}>
             <Image
-              source={{ uri: "https://via.placeholder.com/100" }}
+              source={{ uri: `${user?.avator}` }}
               style={styles.profileImage}
             />
-            <Text style={styles.name}>Customer Name</Text>
-            <Text style={styles.username}>Customer Username</Text>
+            <Text style={styles.name}>{user?.username}</Text>
+            <Text style={styles.username}>Customer Profile</Text>
           </View>
 
 
@@ -147,6 +160,7 @@ export default function Setting() {
           isVisible={modalVisible}
           onClose={() => setModalVisible(false)}
           onSave={handleSave}
+          onLogout={handleLogout} // Make sure this is passed correctly
           title={selectedItem.label}
           placeholder={`Enter ${selectedItem.label}`}
           initialValue={selectedItem}
