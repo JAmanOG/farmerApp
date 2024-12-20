@@ -99,6 +99,13 @@ const handleAddFilter = (filter) => {
         <View style={styles.container}>
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
+              <TouchableOpacity key={product._id} onPress={() => 
+                router.push({ 
+                  pathname: "categories/singleProduct",
+                  params: {procat: JSON.stringify(product.name)}}
+                )
+
+              }>
               <View key={product._id} style={styles.productCard}>
                 <Image
                   source={{
@@ -108,6 +115,7 @@ const handleAddFilter = (filter) => {
                 />
                 <Text style={styles.productName}>{product.name}</Text>
               </View>
+              </TouchableOpacity>
             ))
           ) : (
             <Text style={styles.noProductText}>No products match your filters.</Text>

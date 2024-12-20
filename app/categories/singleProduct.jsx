@@ -88,7 +88,7 @@ const SingleProduct = () => {
 
   return (
     <>
-      {products.length === 0 && <Text>Loading...</Text>}
+      {products.length === 0 && <Text>No Product Available You can Add it</Text>}
 
       <View style={styles.container}>
         <FlatList
